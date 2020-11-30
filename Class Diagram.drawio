@@ -25,7 +25,7 @@
         <mxCell id="bkccexlq_GY75kYhkhC6-9" value="ConnectionPolicy" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
           <mxGeometry x="40" y="270" width="260" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="bkccexlq_GY75kYhkhC6-10" value="- crypographyMethod: CryptographyMethod" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="bkccexlq_GY75kYhkhC6-9" vertex="1">
+        <mxCell id="bkccexlq_GY75kYhkhC6-10" value="- crypographyMethod: ICryptographyMethod" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="bkccexlq_GY75kYhkhC6-9" vertex="1">
           <mxGeometry y="26" width="260" height="34" as="geometry" />
         </mxCell>
         <mxCell id="bkccexlq_GY75kYhkhC6-11" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="bkccexlq_GY75kYhkhC6-9" vertex="1">
@@ -138,7 +138,7 @@
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Hnke83cT4_OZkZOm1KX5-8" value="CryptographyMethod" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;labelBackgroundColor=none;strokeColor=#000000;html=0;" vertex="1" parent="1">
+        <mxCell id="Hnke83cT4_OZkZOm1KX5-8" value="ICryptographyMethod" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;labelBackgroundColor=none;strokeColor=#000000;html=0;" vertex="1" parent="1">
           <mxGeometry x="360" y="210" width="215" height="128" as="geometry" />
         </mxCell>
         <mxCell id="Hnke83cT4_OZkZOm1KX5-9" value="- encryptionKey: byte[]&#xa;- decryptionKey: byte[]&#xa;- initialVector: byte[]" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="Hnke83cT4_OZkZOm1KX5-8">

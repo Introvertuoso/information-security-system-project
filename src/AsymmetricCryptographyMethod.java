@@ -1,17 +1,22 @@
-public class AsymmetricCryptographyMethod extends CryptographyMethod {
+//TODO: [KHALED] Your code here
+public class AsymmetricCryptographyMethod implements ICryptographyMethod {
+    byte [] encryptionKey;
+    byte [] decryptionKey;
 
-
-    public AsymmetricCryptographyMethod(byte[] encryptionKey , byte[] decryptionKey , byte[] initialVector){
-        super(encryptionKey,decryptionKey,initialVector);
-    }
-
-    @Override
-    public byte[] encrypt(Message message) {
-        return new byte[0];
-    }
-
-    @Override
-    public Message decrypt(byte[] data) {
+    public String encrypt(Message message) {
+        System.out.print("Encrypting asymmetrically...");
+        System.out.println("Done");
         return null;
+    }
+
+    public Message decrypt(String data) {
+        System.out.print("Decrypting asymmetrically...");
+        System.out.println("Done");
+        return null;
+    }
+
+    public void init() {
+        System.out.print("Initializing asymmetric encryption...");
+        System.out.println("Done");
     }
 }

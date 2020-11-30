@@ -19,11 +19,9 @@ public class Client {
     private static final String initVector = "encryptionIntVec";
 
     public static void main(String[] args) {
-//        TODO: obtain server IP and port as inputs
-//        TODO: obtain intended file name as input
-//        TODO: support read & write on the provided file
+//        TODO: Obtain server IP and port as inputs
         try (Socket socket = new Socket("127.0.0.1", 11111)) {
-            System.out.println("Enter lines of text then Ctrl+D or Ctrl+C to quit");
+            System.out.println("Enter your commands below (Ctrl+D or Ctrl+C to quit)");
             Scanner scanner = new Scanner(System.in);
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);

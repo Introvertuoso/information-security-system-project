@@ -19,10 +19,12 @@ import java.util.concurrent.Executors;
 
 // nc localhost 11111
 public class ConnectionHandler implements Runnable{
-    private final Socket socket;
-    private String data;
     private static final String initVector = "encryptionIntVec";
     private static final String key = "aesEncryptionKey";
+    public static final String currentPath = "/files/";
+
+    private final Socket socket;
+    private String data;
 
     ConnectionHandler(Socket socket) {
         this.data = "";
@@ -35,10 +37,13 @@ public class ConnectionHandler implements Runnable{
         try {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
             while (in.hasNextLine()) {
                 data = in.nextLine();
                 out.println(encrypt(data));
             }
+
+
         } catch (Exception e) {
             System.out.println("Error:" + socket);
         } finally {
