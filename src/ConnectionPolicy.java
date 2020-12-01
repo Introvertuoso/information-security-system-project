@@ -11,6 +11,7 @@ public abstract class ConnectionPolicy {
     public abstract boolean handshake(Socket socket);
 
     public String generateKey(int keySize){
+        Logger.log("Generating key...");
         KeyGenerator gen;
         String SK = "";
         try {
@@ -19,11 +20,11 @@ public abstract class ConnectionPolicy {
             SecretKey secretKey = gen.generateKey();
             byte[] bytes = secretKey.getEncoded();
             SK = String.format("%032X", new BigInteger(+1, bytes));
+            Logger.log("Done" + "\n");
+
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Logger.log("Failed" + "\n");
         }
         return SK;
-
     }
-
 }

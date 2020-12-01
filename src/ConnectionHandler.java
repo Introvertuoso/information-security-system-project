@@ -18,17 +18,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 // nc localhost 11111
-public class ConnectionHandler implements Runnable{
+public class ConnectionHandler implements Runnable {
     private static final String initVector = "encryptionIntVec";
     private static final String key = "aesEncryptionKey";
     public static final String currentDirectory = "/files/";
 
     private final Socket socket;
     private String data;
+    private ConnectionPolicy connectionPolicy;
 
-    ConnectionHandler(Socket socket) {
+    ConnectionHandler(Socket socket, ConnectionPolicy connectionPolicy) {
         this.data = "";
         this.socket = socket;
+        this.connectionPolicy = connectionPolicy;
+        this.connectionPolicy.init();
     }
 
     @Override
@@ -38,17 +41,25 @@ public class ConnectionHandler implements Runnable{
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            while (in.hasNextLine()) {
-                data = in.nextLine();
-                out.println(encrypt(data));
+            if (!connectionPolicy.handshake(socket)) {
+                Logger.log("Failed to perform handshake." + "\n");
+            } else {
+                while (in.hasNextLine()) {
+                    data = in.nextLine();
+                    out.println(connectionPolicy.cryptographyMethod.encrypt(data));
+                }
             }
 
 
         } catch (Exception e) {
-            System.out.println("Error:" + socket);
+            Logger.log("Error: " + socket + "\n");
         } finally {
-            try { socket.close(); } catch (IOException e) {}
-            System.out.println("Closed: " + socket);
+            try {
+                socket.close();
+                Logger.log("Closed: " + socket + "\n");
+            } catch (IOException e) {
+                Logger.log("Failed to close socket.\n");
+            }
         }
     }
 

@@ -22,7 +22,7 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
 
             String IV = generateKey(128) ; //generate IV key
             out.println(cryptographyMethod.encrypt(IV));
-
+            ((SymmetricCryptographyMethod)cryptographyMethod).setIV(IV);
         } catch (IOException e) {
             e.printStackTrace();
         }

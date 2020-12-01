@@ -11,17 +11,16 @@ import java.util.Base64;
 
 //TODO: [KHALED] Your code here
 public class SymmetricCryptographyMethod implements ICryptographyMethod {
-    String key ;
-    String IV  ;
-    Cipher cipher ;
+    String key;
+    String IV;
+    Cipher cipher;
+
+    public SymmetricCryptographyMethod(){
+    }
 
     public SymmetricCryptographyMethod(String key , String IV){
         this.key = key;
         this.IV = IV;
-    }
-
-    public SymmetricCryptographyMethod(){
-
     }
 
     public String encrypt(String data) {
@@ -48,7 +47,6 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
         return s;
     }
 
-
     public String decrypt(String data) {
         System.out.print("Decrypting symmetrically...");
         try {
@@ -71,17 +69,30 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
     public void init() {
         System.out.print("Initializing symmetric encryption...");
         try {
-            cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
+            this.cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            this.key = "KtobShuMaKan";
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             e.printStackTrace();
         }
         System.out.println("Done");
     }
 
-    public void setIV(String IV){
+    public String getKey() {
+        return key;
+    }
+    public void setKey(String key) {
+        this.key = key;
+    }
+    public String getIV() {
+        return IV;
+    }
+    public void setIV(String IV) {
         this.IV = IV;
     }
-
+    public Cipher getCipher() {
+        return cipher;
+    }
+    public void setCipher(Cipher cipher) {
+        this.cipher = cipher;
+    }
 }

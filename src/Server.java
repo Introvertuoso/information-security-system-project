@@ -11,7 +11,8 @@ public class Server {
             Logger.log("The server is running..." + "\n");
             ExecutorService pool = Executors.newFixedThreadPool(20);
             while (true) {
-                pool.execute(new ConnectionHandler(listener.accept()));
+                ConnectionPolicy connectionPolicy = new HybridConnectionPolicy();
+                pool.execute(new ConnectionHandler(listener.accept(), connectionPolicy));
             }
         }
     }

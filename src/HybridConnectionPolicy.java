@@ -19,7 +19,6 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
         Logger.log("Performing handshake...");
 
         try {
-
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -31,7 +30,8 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
 
             out.println(publicKey);
 
-            ((AsymmetricCryptographyMethod) cryptographyMethod).setKeys(clientPublicKey,privateKey);
+            ((AsymmetricCryptographyMethod) cryptographyMethod).setEncryptionKey(clientPublicKey);
+            ((AsymmetricCryptographyMethod) cryptographyMethod).setDecryptionKey(privateKey);
 
             String sessionKey = generateKey(128); //generate session key
             String IV = generateKey(128); //generate IV key
@@ -39,7 +39,7 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
             out.println(cryptographyMethod.encrypt(sessionKey));
             out.println(cryptographyMethod.encrypt(IV));
 
-            cryptographyMethod = new SymmetricCryptographyMethod(sessionKey,IV);
+            cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
 
         } catch (IOException e) {
             e.printStackTrace();

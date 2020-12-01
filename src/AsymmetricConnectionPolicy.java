@@ -23,8 +23,8 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
     @Override
     public boolean handshake(Socket socket) {
         Logger.log("Performing handshake...");
+        boolean res = false;
         try {
-
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -36,18 +36,19 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
             out.println(publicKey);
 
-            ((AsymmetricCryptographyMethod) cryptographyMethod).setKeys(clientPublicKey,privateKey);
+            ((AsymmetricCryptographyMethod) cryptographyMethod).setEncryptionKey(clientPublicKey);
+            ((AsymmetricCryptographyMethod) cryptographyMethod).setDecryptionKey(privateKey);
+            Logger.log("Done" + "\n");
+            res = true;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.log("Failed" + "\n");
         }
-
-        Logger.log("Done" + "\n");
-        return false;
+        return res;
     }
 
     public Pair<Key,String> generateKeyPair(){
-
+        Logger.log("Generating key pair...");
         KeyPairGenerator kpg;
         Key decryptionKey = null;
         String publicKey = "";
@@ -57,13 +58,12 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             KeyPair kp = kpg.generateKeyPair();
             decryptionKey = kp.getPrivate();
             publicKey = Base64.getMimeEncoder().encodeToString( kp.getPublic().getEncoded());
+            Logger.log("Done" + "\n");
 
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Logger.log("Failed" + "\n");
         }
-
-        return new Pair<Key,String>(decryptionKey,publicKey) ;
-
+        return new Pair<Key,String>(decryptionKey,publicKey);
     }
 
 
