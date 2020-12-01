@@ -1,21 +1,87 @@
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+
 //TODO: [KHALED] Your code here
 public class SymmetricCryptographyMethod implements ICryptographyMethod {
-    byte [] key;
+    String key ;
+    String IV  ;
+    Cipher cipher ;
 
-    public String encrypt(Message message) {
-        System.out.print("Encrypting symmetrically...");
-        System.out.println("Done");
-        return null;
+    public SymmetricCryptographyMethod(String key , String IV){
+        this.key = key;
+        this.IV = IV;
     }
 
-    public Message decrypt(String data) {
+    public SymmetricCryptographyMethod(){
+
+    }
+
+    public String encrypt(String data) {
+        IvParameterSpec iv = new IvParameterSpec(this.IV.getBytes());
+        SecretKeySpec skeySpec = new SecretKeySpec(this.key.getBytes(), "AES");
+        String s = "";
+
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv); // or Cipher.DECRYPT_MODE
+            byte[] encrypted = cipher.doFinal(data.getBytes());
+
+             s = Base64.getEncoder().encodeToString(encrypted);
+            Logger.log(s + "\n");
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
+        return s;
+    }
+
+
+    public String decrypt(String data) {
         System.out.print("Decrypting symmetrically...");
+        try {
+            IvParameterSpec iv = new IvParameterSpec(this.IV.getBytes());
+            SecretKeySpec skeySpec = new SecretKeySpec(this.key.getBytes(), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+
+            byte[] original = cipher.doFinal(Base64.getDecoder().decode(data));
+
+            return new String(original);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         System.out.println("Done");
         return null;
     }
 
     public void init() {
         System.out.print("Initializing symmetric encryption...");
+        try {
+            cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
         System.out.println("Done");
     }
+
+    public void setIV(String IV){
+        this.IV = IV;
+    }
+
 }

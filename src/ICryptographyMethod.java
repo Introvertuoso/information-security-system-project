@@ -1,7 +1,7 @@
 interface ICryptographyMethod {
-    String encrypt(Message message);
+    String encrypt(String message);
 
-    Message decrypt(String data);
+    String decrypt(String data);
 
     void init();
 }
