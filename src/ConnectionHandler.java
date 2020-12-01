@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 public class ConnectionHandler implements Runnable{
     private static final String initVector = "encryptionIntVec";
     private static final String key = "aesEncryptionKey";
-    public static final String currentPath = "/files/";
+    public static final String currentDirectory = "/files/";
 
     private final Socket socket;
     private String data;
@@ -33,7 +33,7 @@ public class ConnectionHandler implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("Connected: " + socket);
+        Logger.log("Connected: " + socket + "\n");
         try {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -62,7 +62,7 @@ public class ConnectionHandler implements Runnable{
         byte[] encrypted = cipher.doFinal(data.getBytes());
 
         String s = Base64.getEncoder().encodeToString(encrypted);
-        System.out.println(s);
+        Logger.log(s + "\n");
         return s;
     }
 

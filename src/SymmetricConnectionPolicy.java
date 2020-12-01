@@ -2,16 +2,16 @@
 public class SymmetricConnectionPolicy extends ConnectionPolicy {
     @Override
     public void init() {
-        System.out.print("Initializing symmetric connection...");
+        Logger.log("Initializing symmetric connection...");
         this.cryptographyMethod = new SymmetricCryptographyMethod();
         this.cryptographyMethod.init();
-        System.out.println("Done");
+        Logger.log("Done" + "\n");
     }
 
     @Override
     public boolean handshake() {
-        System.out.print("Performing handshake...");
-        System.out.println("Done");
+        Logger.log("Performing handshake...");
+        Logger.log("Done" + "\n");
         return false;
     }
 }

@@ -17,30 +17,30 @@ public class Message {
 
     // data -> task and certificate
     public void unpackData() {
-        System.out.print("Unpacking data...");
+        Logger.log("Unpacking data...");
         if (this.data == null) {
-            System.out.println("Failed");
+            Logger.log("Failed" + "\n");
         }
         else {
             String[] temp = data.split("\0");
             if (temp.length != 2) {
-                System.out.println("Failed");
+                Logger.log("Failed" + "\n");
             }
             else {
                 String[] taskTemp = temp[0].split(" ", -1);
                 // TODO: [JAWAD] Properly unpack certificate string for construction.
                 String[] certificateTemp = temp[1].split("\0");
                 if (taskTemp.length != 3) {
-                    System.out.println("Failed");
+                    Logger.log("Failed" + "\n");
                 } else {
                     this.task = new Task(taskTemp[0], taskTemp[1], taskTemp[2]);
                     System.out.println("Done");
                 }
                 if (certificateTemp.length != 1) {
-                    System.out.println("Failed");
+                    Logger.log("Failed" + "\n");
                 } else {
                     this.certificate = new Certificate(certificateTemp[0]);
-                    System.out.println("Done");
+                    Logger.log("Done" + "\n");
                 }
             }
         }

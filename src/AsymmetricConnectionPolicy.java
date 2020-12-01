@@ -2,16 +2,16 @@
 public class AsymmetricConnectionPolicy extends ConnectionPolicy {
     @Override
     public void init() {
-        System.out.print("Initializing asymmetric connection...");
+        Logger.log("Initializing asymmetric connection...");
         this.cryptographyMethod = new AsymmetricCryptographyMethod();
         this.cryptographyMethod.init();
-        System.out.println("Done");
+        Logger.log("Done" + "\n");
     }
 
     @Override
     public boolean handshake() {
-        System.out.print("Performing handshake...");
-        System.out.println("Done");
+        Logger.log("Performing handshake...");
+        Logger.log("Done" + "\n");
         return false;
     }
 }

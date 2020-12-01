@@ -2,14 +2,14 @@
 public class HybridConnectionPolicy extends ConnectionPolicy {
     @Override
     public void init() {
-        System.out.print("Initializing hybrid connection...");
-        System.out.println("Done");
+        Logger.log("Initializing hybrid connection...");
+        Logger.log("Done" + "\n");
     }
 
     @Override
     public boolean handshake() {
-        System.out.print("Performing handshake...");
-        System.out.println("Done");
+        Logger.log("Performing handshake...");
+        Logger.log("Done" + "\n");
         return false;
     }
 }

@@ -19,7 +19,9 @@ public class Client {
     private static final String initVector = "encryptionIntVec";
 
     public static void main(String[] args) {
-//        TODO: Obtain server IP and port as inputs
+        if (args.length != 2) {
+            System.out.println();
+        }
         try (Socket socket = new Socket("127.0.0.1", 11111)) {
             System.out.println("Enter your commands below (Ctrl+D or Ctrl+C to quit)");
             Scanner scanner = new Scanner(System.in);
