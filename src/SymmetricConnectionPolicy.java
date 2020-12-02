@@ -3,7 +3,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-//TODO: [NADER] Your code here
 public class SymmetricConnectionPolicy extends ConnectionPolicy {
     @Override
     public void init() {
@@ -20,13 +19,16 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            String IV = generateKey(128) ; //generate IV key
-            out.println(cryptographyMethod.encrypt(IV));
+            // This should be sent by Client since Client initiates the connection
+            String IV = generateKey(128); //generate IV key
+            out.println(IV);
             ((SymmetricCryptographyMethod)cryptographyMethod).setIV(IV);
+
+            Logger.log("Done" + "\n");
+            
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.log("Failed" + "\n");
         }
-        Logger.log("Done" + "\n");
         return false;
     }
 

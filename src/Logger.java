@@ -13,7 +13,7 @@ public class Logger {
     public static String FAILURE = "Failure";
     public static String SUCCESS = "Success";
     private static ArrayList<String> logs;
-
+    
     public static void start() {
         if (fileLogs) {
             ScheduledExecutorService executor =

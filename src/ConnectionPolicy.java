@@ -20,6 +20,7 @@ public abstract class ConnectionPolicy {
             SecretKey secretKey = gen.generateKey();
             byte[] bytes = secretKey.getEncoded();
             SK = String.format("%032X", new BigInteger(+1, bytes));
+            
             Logger.log("Done" + "\n");
 
         } catch (NoSuchAlgorithmException e) {

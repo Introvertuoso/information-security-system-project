@@ -9,11 +9,11 @@ public class Message {
         this.certificate = null;
         this.data = data;
     }
-    public Message(Task task, Certificate certificate) {
+    public  Message(Task task, Certificate certificate) {
         this.task = task;
         this.certificate = certificate;
         this.data = null;
-    }
+    } 
 
     // data -> task and certificate
     public void unpackData() {
@@ -34,7 +34,7 @@ public class Message {
                     Logger.log("Failed" + "\n");
                 } else {
                     this.task = new Task(taskTemp[0], taskTemp[1], taskTemp[2]);
-                    System.out.println("Done");
+                    Logger.log("Done" + "\n");
                 }
                 if (certificateTemp.length != 1) {
                     Logger.log("Failed" + "\n");
@@ -50,14 +50,14 @@ public class Message {
     public void packData() {
         System.out.print("Packing data...");
         if (this.task == null || this.certificate == null) {
-            System.out.println("Failed");
+            Logger.log("Failed"+ "\n");
         }
         else {
             String[] temp = new String[2];
             temp[0] = this.task.toString();
             temp[1] = this.certificate.toString();
             data = String.join("\0", temp);
-            System.out.println("Done");
+            Logger.log("Done" + "\n");
         }
     }
 

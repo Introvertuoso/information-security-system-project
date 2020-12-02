@@ -9,21 +9,38 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-//TODO: [KHALED] Your code here
 public class AsymmetricCryptographyMethod implements ICryptographyMethod {
     String encryptionKey;
     Key decryptionKey;
     Cipher cipher;
 
+    public void init() {
+        Logger.log("Initializing asymmetric encryption...");
+        try {
+            cipher = Cipher.getInstance("RSA");
+            Logger.log("Done" + "\n");
+
+        } catch (Exception e) {
+            Logger.log("Failed" + "\n");
+        }
+    }
+
     @Override
     public String encrypt(String data) {
         Logger.log("Encrypting asymmetrically...");
         try {
-            cipher.init(Cipher.ENCRYPT_MODE,new SecretKeySpec(encryptionKey.getBytes(),0,encryptionKey.getBytes().length, "DES"));
+            // TODO: Fix this it doesn't work.
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(
+                            encryptionKey.getBytes(),
+                            0,
+                            encryptionKey.getBytes().length,
+                            "DES"
+                    )
+            );
             Logger.log("Done" + "\n");
             return Arrays.toString(cipher.doFinal(data.getBytes()));
 
-        } catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+        } catch (Exception e) {
             Logger.log("Failed" + "\n");
         }
         return null;
@@ -33,26 +50,17 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
     public String decrypt(String data) {
         Logger.log("Decrypting asymmetrically...");
         try {
+            // TODO: Check if this works after fixing the above
             cipher.init(Cipher.DECRYPT_MODE, decryptionKey);
             byte[] utf8 = cipher.doFinal(data.getBytes());
+            
             Logger.log("Done" + "\n");
             return new String(utf8, StandardCharsets.UTF_8);
 
-        } catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+        } catch (Exception e) {
             Logger.log("Failed" + "\n");
         }
         return null;
-    }
-
-    public void init() {
-        Logger.log("Initializing asymmetric encryption...");
-        try {
-            cipher = Cipher.getInstance("RSA");
-            Logger.log("Done" + "\n");
-
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            Logger.log("Failed" + "\n");
-        }
     }
 
     public String getEncryptionKey() {

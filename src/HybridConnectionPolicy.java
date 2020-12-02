@@ -4,7 +4,6 @@ import java.net.Socket;
 import java.security.Key;
 import java.util.Scanner;
 
-//TODO: [ABDALLAH] Your code here
 public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
     @Override
     public void init() {
@@ -17,21 +16,12 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
     @Override
     public boolean handshake(Socket socket) {
         Logger.log("Performing handshake...");
+        boolean res = false;
 
         try {
-            Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
-            Pair<Key,String> keys = generateKeyPair();
-            Key privateKey = keys.getKey(); //generate the public key
-            String publicKey = keys.getValue() ; //generate the public key
-
-            String clientPublicKey = in.nextLine() ;
-
-            out.println(publicKey);
-
-            ((AsymmetricCryptographyMethod) cryptographyMethod).setEncryptionKey(clientPublicKey);
-            ((AsymmetricCryptographyMethod) cryptographyMethod).setDecryptionKey(privateKey);
+            
+            super.handshake(socket);
 
             String sessionKey = generateKey(128); //generate session key
             String IV = generateKey(128); //generate IV key
@@ -40,12 +30,12 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
             out.println(cryptographyMethod.encrypt(IV));
 
             cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
+            Logger.log("Done" + "\n");
+            res = true;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.log("Failed" + "\n");
         }
-
-        Logger.log("Done" + "\n");
-        return false;
+        return res;
     }
 }

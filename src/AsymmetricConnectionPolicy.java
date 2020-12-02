@@ -1,5 +1,3 @@
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -10,7 +8,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Scanner;
 
-//TODO: [NADER] Your code here
 public class AsymmetricConnectionPolicy extends ConnectionPolicy {
     @Override
     public void init() {
@@ -29,15 +26,15 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
             Pair<Key,String> keys = generateKeyPair();
-            Key privateKey = keys.getKey(); //generate the public key
-            String publicKey = keys.getValue() ; //generate the public key
+            Key privateKey = keys.getKey();         //generate the public key
+            String publicKey = keys.getValue();     //generate the public key
 
-            String clientPublicKey = in.nextLine() ;
-
+            String clientPublicKey = in.nextLine();
             out.println(publicKey);
 
             ((AsymmetricCryptographyMethod) cryptographyMethod).setEncryptionKey(clientPublicKey);
             ((AsymmetricCryptographyMethod) cryptographyMethod).setDecryptionKey(privateKey);
+            
             Logger.log("Done" + "\n");
             res = true;
 
@@ -57,10 +54,10 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             kpg.initialize(2048);
             KeyPair kp = kpg.generateKeyPair();
             decryptionKey = kp.getPrivate();
-            publicKey = Base64.getMimeEncoder().encodeToString( kp.getPublic().getEncoded());
+            publicKey = Base64.getMimeEncoder().encodeToString(kp.getPublic().getEncoded());
             Logger.log("Done" + "\n");
 
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             Logger.log("Failed" + "\n");
         }
         return new Pair<Key,String>(decryptionKey,publicKey);

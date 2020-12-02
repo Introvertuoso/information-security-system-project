@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+// TODO: Test if this works
 public class Task {
     private String filepath;
     private String action; // Supported actions are list, read, write, navigate?
@@ -15,6 +16,34 @@ public class Task {
         this.action = action;
         this.newFileContent = newFileContent;
     }
+    public Task(String command) {
+        StringBuilder res = new StringBuilder(command);
+        String[] temp = command.split(" ");
+        if (temp.length < 3) {
+            res.append(" ".repeat(3 - temp.length));
+        }
+        temp = res.toString().split(" ");
+        this.filepath = temp[0];
+        this.action = temp[1];
+        this.newFileContent = temp[2];
+    }
+
+    @Override
+    public String toString() {
+        String[] temp = new String[3];
+        temp[0] = this.filepath;
+        temp[1] = this.action;
+        temp[2] = this.newFileContent;
+        return String.join(" ", temp);
+    }
+
+    //    out.println(
+//      connectionPolicy.connectionMethod.encrypt(
+//          new Message(
+//              new Task(scanner.nextLine()), new Certificate()
+//          ).packData().getData()
+//      )
+//    )
 
     public String execute() { // Execute should become in ConnectionHandler to allow navigation
         Logger.log("Executing task...");

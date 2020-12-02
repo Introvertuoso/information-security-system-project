@@ -1,54 +1,56 @@
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-//TODO: [KHALED] Your code here
+// TODO: Find a solution for empty strings returned by encrypt and null by decrypt
 public class SymmetricCryptographyMethod implements ICryptographyMethod {
     String key;
     String IV;
     Cipher cipher;
 
-    public SymmetricCryptographyMethod(){
-    }
+    public SymmetricCryptographyMethod() { }
 
-    public SymmetricCryptographyMethod(String key , String IV){
+    public SymmetricCryptographyMethod(String key, String IV) {
         this.key = key;
         this.IV = IV;
     }
 
+    public void init() {
+        System.out.print("Initializing symmetric encryption...");
+        try {
+            this.cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            this.key = "KtobShuMaKan";
+            Logger.log("Done" + "\n");
+
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            Logger.log("Failed" + "\n");
+        }
+    }
+
     public String encrypt(String data) {
+        Logger.log("Encrypting symmetrically...");
         IvParameterSpec iv = new IvParameterSpec(this.IV.getBytes());
         SecretKeySpec skeySpec = new SecretKeySpec(this.key.getBytes(), "AES");
-        String s = "";
+        String res = "";
 
         try {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv); // or Cipher.DECRYPT_MODE
             byte[] encrypted = cipher.doFinal(data.getBytes());
 
-             s = Base64.getEncoder().encodeToString(encrypted);
-            Logger.log(s + "\n");
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        }
+            res = Base64.getEncoder().encodeToString(encrypted);
+            Logger.log("Done" + "\n");
 
-        return s;
+        } catch (Exception e) {
+            Logger.log("Failed" + "\n");
+        }
+        return res;
     }
 
     public String decrypt(String data) {
-        System.out.print("Decrypting symmetrically...");
+        Logger.log("Decrypting symmetrically...");
         try {
             IvParameterSpec iv = new IvParameterSpec(this.IV.getBytes());
             SecretKeySpec skeySpec = new SecretKeySpec(this.key.getBytes(), "AES");
@@ -58,23 +60,13 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
 
             byte[] original = cipher.doFinal(Base64.getDecoder().decode(data));
 
+            Logger.log("Done" + "\n");
             return new String(original);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        System.out.println("Done");
-        return null;
-    }
 
-    public void init() {
-        System.out.print("Initializing symmetric encryption...");
-        try {
-            this.cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            this.key = "KtobShuMaKan";
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            Logger.log("Failed" + "\n");
         }
-        System.out.println("Done");
+        return null;
     }
 
     public String getKey() {
