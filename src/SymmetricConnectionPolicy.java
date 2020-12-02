@@ -17,12 +17,8 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
         Logger.log("Performing handshake...");
         try {
             Scanner in = new Scanner(socket.getInputStream());
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            // This should be sent by Client since Client initiates the connection
-            String IV = generateKey(128); //generate IV key
-            out.println(IV);
-            ((SymmetricCryptographyMethod)cryptographyMethod).setIV(IV);
+            ((SymmetricCryptographyMethod)cryptographyMethod).setIV(in.nextLine());
 
             Logger.log("Done" + "\n");
             

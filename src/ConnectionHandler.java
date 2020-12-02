@@ -46,6 +46,7 @@ public class ConnectionHandler implements Runnable {
             } else {
                 while (in.hasNextLine()) {
                     data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
+                    System.out.println(data);
                     out.println(connectionPolicy.cryptographyMethod.encrypt(data));
                 }
             }
