@@ -32,7 +32,7 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         try {
             cipher.init(Cipher.ENCRYPT_MODE, loadPublicKey(this.encryptionKey));
             Logger.log("Done" + "\n");
-            return new String(cipher.doFinal(data.getBytes()));
+            return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes()));
 
         } catch (Exception e) {
             Logger.log("Failed" + "\n");
@@ -47,7 +47,7 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
             cipher.init(Cipher.DECRYPT_MODE, loadPrivateKey(this.decryptionKey));
 
             Logger.log("Done" + "\n");
-            return new String(cipher.doFinal(Base64.getDecoder().decode(data.getBytes())));
+            return new String(cipher.doFinal(Base64.getDecoder().decode(data)));
 
         } catch (Exception e) {
             Logger.log("Failed" + "\n");
@@ -56,31 +56,25 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
     }
 
     public static Key loadPublicKey(String storedPublic) {
-        Logger.log("Loading public key...");
         try {
-            byte[] data = Base64.getDecoder().decode((storedPublic.getBytes()));
+            byte[] data = Base64.getDecoder().decode(storedPublic.getBytes());
             X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
             KeyFactory fact = KeyFactory.getInstance("RSA");
-            Logger.log("Done" + "\n");
             return fact.generatePublic(spec);
 
-        } catch (Exception e) {
-            Logger.log("Failed" + "\n");
+        } catch (Exception ignored) {
         }
         return null;
     }
 
     public static Key loadPrivateKey(String storedPrivate) {
-        Logger.log("Loading private key...");
         try {
-            byte[] data = Base64.getDecoder().decode((storedPrivate.getBytes()));
+            byte[] data = Base64.getDecoder().decode(storedPrivate.getBytes());
             PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(data);
             KeyFactory fact = KeyFactory.getInstance("RSA");
-            Logger.log("Done" + "\n");
             return fact.generatePrivate(spec);
 
-        } catch (Exception e) {
-            Logger.log("Failed" + "\n");
+        } catch (Exception ignored) {
         }
         return null;
     }

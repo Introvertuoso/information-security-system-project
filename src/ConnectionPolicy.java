@@ -3,6 +3,8 @@ import javax.crypto.SecretKey;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 public abstract class ConnectionPolicy {
     protected ICryptographyMethod cryptographyMethod;
@@ -27,5 +29,12 @@ public abstract class ConnectionPolicy {
             Logger.log("Failed" + "\n");
         }
         return SK;
+    }
+
+    public String generateIV() {
+        byte[] iv = new byte[128/8];
+        SecureRandom srandom = new SecureRandom();
+        srandom.nextBytes(iv);
+        return Base64.getEncoder().encodeToString(iv);
     }
 }

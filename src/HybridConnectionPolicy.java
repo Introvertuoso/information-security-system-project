@@ -24,12 +24,14 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
             super.handshake(socket);
 
             String sessionKey = generateKey(128); //generate session key
-            String IV = generateKey(128); //generate IV key
+            String IV = generateIV(); //generate IV key
 
             out.println(cryptographyMethod.encrypt(sessionKey));
             out.println(cryptographyMethod.encrypt(IV));
 
             cryptographyMethod = new SymmetricCryptographyMethod(sessionKey, IV);
+            cryptographyMethod.init();
+
             Logger.log("Done" + "\n");
             res = true;
 

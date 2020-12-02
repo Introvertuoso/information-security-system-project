@@ -23,7 +23,7 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
         System.out.print("Initializing symmetric encryption...");
         try {
             this.cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            this.key = "KtobShuMaKan";
+            this.key = "aesEncryptionKey";
             Logger.log("Done" + "\n");
 
         } catch (Exception e) {
@@ -33,7 +33,7 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
 
     public String encrypt(String data) {
         Logger.log("Encrypting symmetrically...");
-        IvParameterSpec iv = new IvParameterSpec(this.IV.getBytes());
+        IvParameterSpec iv = new IvParameterSpec(Base64.getDecoder().decode(this.IV));
         SecretKeySpec skeySpec = new SecretKeySpec(this.key.getBytes(), "AES");
 
         try {
@@ -52,7 +52,7 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
     public String decrypt(String data) {
         Logger.log("Decrypting symmetrically...");
         try {
-            IvParameterSpec iv = new IvParameterSpec(this.IV.getBytes());
+            IvParameterSpec iv = new IvParameterSpec(Base64.getDecoder().decode(this.IV));
             SecretKeySpec skeySpec = new SecretKeySpec(this.key.getBytes(), "AES");
 
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);

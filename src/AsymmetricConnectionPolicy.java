@@ -23,8 +23,8 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
             Pair<String, String> keys = generateKeyPair();
-            String privateKey = keys.getKey();         //generate the public key
-            String publicKey = keys.getValue();     //generate the public key
+            String publicKey = keys.getKey();         //generate the public key
+            String privateKey = keys.getValue();     //generate the private key
 
             String clientPublicKey = in.nextLine();
             out.println(publicKey);
@@ -44,16 +44,16 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
     public Pair<String, String> generateKeyPair(){
         Logger.log("Generating key pair...");
         KeyPairGenerator kpg;
-        String privateKey = null;
         String publicKey = null;
+        String privateKey = null;
         try {
             kpg = KeyPairGenerator.getInstance("RSA");
             kpg.initialize(1024);
             KeyPair kp = kpg.generateKeyPair();
-            privateKey = Base64.getEncoder().encodeToString(kp.getPrivate().getEncoded());
             publicKey = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
+            privateKey = Base64.getEncoder().encodeToString(kp.getPrivate().getEncoded());
             Logger.log("Done" + "\n");
-            return new Pair<String, String>(privateKey, publicKey);
+            return new Pair<String, String>(publicKey, privateKey);
 
         } catch (Exception e) {
             Logger.log("Failed" + "\n");
