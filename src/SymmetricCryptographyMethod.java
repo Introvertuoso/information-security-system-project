@@ -2,6 +2,7 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
@@ -25,7 +26,7 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
             this.key = "KtobShuMaKan";
             Logger.log("Done" + "\n");
 
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+        } catch (Exception e) {
             Logger.log("Failed" + "\n");
         }
     }
@@ -34,19 +35,18 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
         Logger.log("Encrypting symmetrically...");
         IvParameterSpec iv = new IvParameterSpec(this.IV.getBytes());
         SecretKeySpec skeySpec = new SecretKeySpec(this.key.getBytes(), "AES");
-        String res = "";
 
         try {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv); // or Cipher.DECRYPT_MODE
             byte[] encrypted = cipher.doFinal(data.getBytes());
 
-            res = Base64.getEncoder().encodeToString(encrypted);
             Logger.log("Done" + "\n");
+            return Base64.getEncoder().encodeToString(encrypted);
 
         } catch (Exception e) {
             Logger.log("Failed" + "\n");
         }
-        return res;
+        return null;
     }
 
     public String decrypt(String data) {
@@ -55,13 +55,12 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
             IvParameterSpec iv = new IvParameterSpec(this.IV.getBytes());
             SecretKeySpec skeySpec = new SecretKeySpec(this.key.getBytes(), "AES");
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
             byte[] original = cipher.doFinal(Base64.getDecoder().decode(data));
 
             Logger.log("Done" + "\n");
-            return new String(original);
+            return new String(original, StandardCharsets.UTF_8);
 
         } catch (Exception ex) {
             Logger.log("Failed" + "\n");

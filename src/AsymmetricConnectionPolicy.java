@@ -1,10 +1,7 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.util.Base64;
 import java.util.Scanner;
 
@@ -25,8 +22,8 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            Pair<Key,String> keys = generateKeyPair();
-            Key privateKey = keys.getKey();         //generate the public key
+            Pair<String, String> keys = generateKeyPair();
+            String privateKey = keys.getKey();         //generate the public key
             String publicKey = keys.getValue();     //generate the public key
 
             String clientPublicKey = in.nextLine();
@@ -44,23 +41,24 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         return res;
     }
 
-    public Pair<Key,String> generateKeyPair(){
+    public Pair<String, String> generateKeyPair(){
         Logger.log("Generating key pair...");
         KeyPairGenerator kpg;
-        Key decryptionKey = null;
-        String publicKey = "";
+        String privateKey = null;
+        String publicKey = null;
         try {
             kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(2048);
+            kpg.initialize(1024);
             KeyPair kp = kpg.generateKeyPair();
-            decryptionKey = kp.getPrivate();
-            publicKey = Base64.getMimeEncoder().encodeToString(kp.getPublic().getEncoded());
+            privateKey = Base64.getEncoder().encodeToString(kp.getPrivate().getEncoded());
+            publicKey = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
             Logger.log("Done" + "\n");
+            return new Pair<String, String>(privateKey, publicKey);
 
         } catch (Exception e) {
             Logger.log("Failed" + "\n");
         }
-        return new Pair<Key,String>(decryptionKey,publicKey);
+        return null;
     }
 
 

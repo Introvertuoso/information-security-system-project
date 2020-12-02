@@ -4,20 +4,21 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
+import java.util.Base64;
 
 public class AsymmetricCryptographyMethod implements ICryptographyMethod {
-    String encryptionKey;
-    Key decryptionKey;
-    Cipher cipher;
+    private String encryptionKey;
+    private String decryptionKey;
+    private Cipher cipher;
 
     public void init() {
         Logger.log("Initializing asymmetric encryption...");
         try {
-            cipher = Cipher.getInstance("RSA");
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
             Logger.log("Done" + "\n");
 
         } catch (Exception e) {
@@ -29,16 +30,9 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
     public String encrypt(String data) {
         Logger.log("Encrypting asymmetrically...");
         try {
-            // TODO: Fix this it doesn't work.
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(
-                            encryptionKey.getBytes(),
-                            0,
-                            encryptionKey.getBytes().length,
-                            "DES"
-                    )
-            );
+            cipher.init(Cipher.ENCRYPT_MODE, loadPublicKey(this.encryptionKey));
             Logger.log("Done" + "\n");
-            return Arrays.toString(cipher.doFinal(data.getBytes()));
+            return new String(cipher.doFinal(data.getBytes()));
 
         } catch (Exception e) {
             Logger.log("Failed" + "\n");
@@ -50,12 +44,40 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
     public String decrypt(String data) {
         Logger.log("Decrypting asymmetrically...");
         try {
-            // TODO: Check if this works after fixing the above
-            cipher.init(Cipher.DECRYPT_MODE, decryptionKey);
-            byte[] utf8 = cipher.doFinal(data.getBytes());
-            
+            cipher.init(Cipher.DECRYPT_MODE, loadPrivateKey(this.decryptionKey));
+
             Logger.log("Done" + "\n");
-            return new String(utf8, StandardCharsets.UTF_8);
+            return new String(cipher.doFinal(Base64.getDecoder().decode(data.getBytes())));
+
+        } catch (Exception e) {
+            Logger.log("Failed" + "\n");
+        }
+        return null;
+    }
+
+    public static Key loadPublicKey(String storedPublic) {
+        Logger.log("Loading public key...");
+        try {
+            byte[] data = Base64.getDecoder().decode((storedPublic.getBytes()));
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(data);
+            KeyFactory fact = KeyFactory.getInstance("RSA");
+            Logger.log("Done" + "\n");
+            return fact.generatePublic(spec);
+
+        } catch (Exception e) {
+            Logger.log("Failed" + "\n");
+        }
+        return null;
+    }
+
+    public static Key loadPrivateKey(String storedPrivate) {
+        Logger.log("Loading private key...");
+        try {
+            byte[] data = Base64.getDecoder().decode((storedPrivate.getBytes()));
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(data);
+            KeyFactory fact = KeyFactory.getInstance("RSA");
+            Logger.log("Done" + "\n");
+            return fact.generatePrivate(spec);
 
         } catch (Exception e) {
             Logger.log("Failed" + "\n");
@@ -69,10 +91,10 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
     public void setEncryptionKey(String encryptionKey) {
         this.encryptionKey = encryptionKey;
     }
-    public Key getDecryptionKey() {
+    public String getDecryptionKey() {
         return decryptionKey;
     }
-    public void setDecryptionKey(Key decryptionKey) {
+    public void setDecryptionKey(String decryptionKey) {
         this.decryptionKey = decryptionKey;
     }
     public Cipher getCipher() {
