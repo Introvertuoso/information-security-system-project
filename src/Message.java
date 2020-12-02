@@ -9,7 +9,7 @@ public class Message {
         this.certificate = null;
         this.data = data;
     }
-    public  Message(Task task, Certificate certificate) {
+    public Message(Task task, Certificate certificate) {
         this.task = task;
         this.certificate = certificate;
         this.data = null;
@@ -27,7 +27,7 @@ public class Message {
                 Logger.log("Failed" + "\n");
             }
             else {
-                String[] taskTemp = temp[0].split(" ", -1);
+                String[] taskTemp = temp[0].split(" ", 3);
                 // TODO: [JAWAD] Properly unpack certificate string for construction.
                 String[] certificateTemp = temp[1].split("\0");
                 if (taskTemp.length != 3) {

@@ -5,34 +5,33 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-// TODO: Test if this works
 public class Task {
-    private String filepath;
     private String action; // Supported actions are list, read, write, navigate?
+    private String filepath;
     private String newFileContent;
 
-    public Task(String filepath, String action, String newFileContent) {
-        this.filepath = filepath;
+    public Task(String action, String filepath, String newFileContent) {
         this.action = action;
+        this.filepath = filepath;
         this.newFileContent = newFileContent;
     }
     public Task(String command) {
         StringBuilder res = new StringBuilder(command);
-        String[] temp = command.split(" ");
+        String[] temp = command.split(" ", 3);
         if (temp.length < 3) {
             res.append(" ".repeat(3 - temp.length));
         }
-        temp = res.toString().split(" ");
-        this.filepath = temp[0];
-        this.action = temp[1];
+        temp = res.toString().split(" ", 3);
+        this.action = temp[0];
+        this.filepath = temp[1];
         this.newFileContent = temp[2];
     }
 
     @Override
     public String toString() {
         String[] temp = new String[3];
-        temp[0] = this.filepath;
-        temp[1] = this.action;
+        temp[0] = this.action;
+        temp[1] = this.filepath;
         temp[2] = this.newFileContent;
         return String.join(" ", temp);
     }
@@ -51,19 +50,19 @@ public class Task {
         switch (action) {
             case "list":
                 if (!this.filepath.equals("") || !this.newFileContent.equals("")) {
-                    Logger.log("Failed" + "\n");
+                    Logger.log("FailedList1" + "\n");
                     temp.append(Logger.FAILURE);
                 } else {
                     File dir = new File(ConnectionHandler.currentDirectory);
                     if (!dir.isDirectory()) {
-                        Logger.log("Failed" + "\n");
+                        Logger.log("FailedList2" + "\n");
                         temp.append(Logger.FAILURE);
                     }
                     else {
                         File[] files = dir.listFiles();
                         if (files == null || files.length == 0) {
                             temp.append(Logger.FAILURE);
-                            Logger.log("Failed" + "\n");
+                            Logger.log("FailedList3" + "\n");
                         }
                         else {
                             for (File f : files) {
@@ -77,11 +76,11 @@ public class Task {
             case "read":
                 if (!this.newFileContent.equals("")) {
                     temp.append(Logger.FAILURE);
-                    Logger.log("Failed" + "\n");
+                    Logger.log("FailedRead1" + "\n");
                 } else {
                     File file = new File(this.filepath);
                     if (!file.exists()) {
-                        Logger.log("Failed" + "\n");
+                        Logger.log("FailedRead2" + "\n");
                         temp.append(Logger.FAILURE);
                     }
                     else {
@@ -93,7 +92,7 @@ public class Task {
                             Logger.log("Done" + "\n");
                         } catch (IOException e) {
                             temp.append(Logger.FAILURE);
-                            Logger.log("Failed" + "\n");
+                            Logger.log("FailedRead3" + "\n");
                         }
                     }
                 }
@@ -105,7 +104,7 @@ public class Task {
                 } else {
                     File file = new File(this.filepath);
                     if (!file.exists()) {
-                        Logger.log("Failed" + "\n");
+                        Logger.log("FailedWrite1" + "\n");
                         temp.append(Logger.FAILURE);
                     }
                     else {
@@ -116,7 +115,7 @@ public class Task {
                             temp.append(Logger.SUCCESS);
                             Logger.log("Done" + "\n");
                         } catch (IOException e) {
-                            Logger.log("Failed" + "\n");
+                            Logger.log("FailedWrite2" + "\n");
                             temp.append(Logger.FAILURE);
                         }
                     }

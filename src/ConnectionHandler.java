@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class ConnectionHandler implements Runnable {
 //    private static final String initVector = "encryptionIntVec";
 //    private static final String key = "aesEncryptionKey";
-    public static final String currentDirectory = "/files/";
+    public static final String currentDirectory = "files";
 
     private final Socket socket;
     private final ConnectionPolicy connectionPolicy;
@@ -32,13 +32,16 @@ public class ConnectionHandler implements Runnable {
             } else {
                 while (in.hasNextLine()) {
                     data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
-                    System.out.println(data);
-                    out.println(connectionPolicy.cryptographyMethod.encrypt(data));
+//                    System.out.println(data);
+                    Message message = new Message(data);
+                    message.unpackData();
+                    out.println(connectionPolicy.cryptographyMethod.encrypt(message.getTask().execute()));
                 }
             }
 
         } catch (Exception e) {
             Logger.log("Error: " + socket + "\n");
+            e.printStackTrace();
         } finally {
             try {
                 socket.close();
