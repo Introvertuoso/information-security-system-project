@@ -22,16 +22,18 @@ public abstract class ConnectionPolicy {
             SecretKey secretKey = gen.generateKey();
             byte[] bytes = secretKey.getEncoded();
             SK = String.format("%032X", new BigInteger(+1, bytes));
-            
-            Logger.log("Done" + "\n");
+
 
         } catch (NoSuchAlgorithmException e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return SK;
     }
 
+    public abstract String getClientPublicKey();
+
     public String generateIV() {
+        Logger.log("Generating initial vector...");
         byte[] iv = new byte[128/8];
         SecureRandom srandom = new SecureRandom();
         srandom.nextBytes(iv);

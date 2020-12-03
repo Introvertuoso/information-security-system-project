@@ -15,6 +15,7 @@ public class Task {
         this.filepath = filepath;
         this.newFileContent = newFileContent;
     }
+
     public Task(String command) {
         StringBuilder res = new StringBuilder(command);
         String[] temp = command.split(" ", 3);
@@ -44,31 +45,28 @@ public class Task {
 //      )
 //    )
 
-    public String execute() { // Execute should become in ConnectionHandler to allow navigation
+    public String execute(String key) { // Execute should become in ConnectionHandler to allow navigation
         Logger.log("Executing task...");
         StringBuilder temp = new StringBuilder();
         switch (action) {
             case "list":
                 if (!this.filepath.equals("") || !this.newFileContent.equals("")) {
-                    Logger.log("FailedList1" + "\n");
+                    Logger.log("Command is malformed");
                     temp.append(Logger.FAILURE);
                 } else {
                     File dir = new File(ConnectionHandler.currentDirectory);
                     if (!dir.isDirectory()) {
-                        Logger.log("FailedList2" + "\n");
+                        Logger.log("Root is invalid.");
                         temp.append(Logger.FAILURE);
-                    }
-                    else {
+                    } else {
                         File[] files = dir.listFiles();
                         if (files == null || files.length == 0) {
-                            temp.append(Logger.FAILURE);
-                            Logger.log("FailedList3" + "\n");
-                        }
-                        else {
+                            temp.append("Root is empty.");
+                            Logger.log("Root is empty.");
+                        } else {
                             for (File f : files) {
                                 temp.append(f.getPath()).append("\n");
                             }
-                            Logger.log("Done" + "\n");
                         }
                     }
                 }
@@ -76,23 +74,21 @@ public class Task {
             case "read":
                 if (!this.newFileContent.equals("")) {
                     temp.append(Logger.FAILURE);
-                    Logger.log("FailedRead1" + "\n");
+                    Logger.log("Command is malformed.");
                 } else {
                     File file = new File(this.filepath);
                     if (!file.exists()) {
-                        Logger.log("FailedRead2" + "\n");
+                        Logger.log("Invalid filepath");
                         temp.append(Logger.FAILURE);
-                    }
-                    else {
+                    } else {
                         try {
                             List<String> lines = Files.readAllLines(Path.of(this.filepath));
                             for (String s : lines) {
                                 temp.append(s).append("\n");
                             }
-                            Logger.log("Done" + "\n");
                         } catch (IOException e) {
                             temp.append(Logger.FAILURE);
-                            Logger.log("FailedRead3" + "\n");
+                            Logger.log(e.getMessage());
                         }
                     }
                 }
@@ -100,31 +96,80 @@ public class Task {
             case "write":
                 if (this.newFileContent.equals("")) {
                     temp.append(Logger.SUCCESS);
-                    Logger.log("Done" + "\n");
+
                 } else {
                     File file = new File(this.filepath);
-                    if (!file.exists()) {
-                        Logger.log("FailedWrite1" + "\n");
-                        temp.append(Logger.FAILURE);
-                    }
-                    else {
-                        try {
-                            FileWriter writer = new FileWriter(this.filepath);
-                            writer.write(this.newFileContent);
-                            writer.close();
-                            temp.append(Logger.SUCCESS);
-                            Logger.log("Done" + "\n");
-                        } catch (IOException e) {
-                            Logger.log("FailedWrite2" + "\n");
+                    int compatibility;
+
+                    try {
+                        compatibility = isCompatible(key);
+
+                        if (compatibility < 0) {
+                            Logger.log("Access denied.");
                             temp.append(Logger.FAILURE);
+                        } else {
+                            try {
+                                if (compatibility == 0) {
+                                    registerFileOwnerPair(key);
+                                }
+                                FileWriter writer = new FileWriter(this.filepath);
+                                writer.write(this.newFileContent);
+                                writer.close();
+                                temp.append(Logger.SUCCESS);
+
+                            } catch (IOException e) {
+                                Logger.log(e.getMessage());
+                                temp.append(Logger.FAILURE);
+                            }
                         }
+
+                    } catch (Exception e) {
+                        Logger.log(e.getMessage());
+                        temp.append(Logger.FAILURE);
                     }
                 }
                 break;
             default:
                 temp.append(Logger.FAILURE);
-                Logger.log("Failed" + "\n");
+                Logger.log("Command is malformed.");
         }
         return temp.toString();
+    }
+
+    private int isCompatible(String key) throws IOException {
+        Logger.log("Checking for compatibility...");
+        int res = 0; // -1 = not the owner, 0 = doesn't exist, 1 = the owner
+        File register = new File(Server.registerPath);
+
+        if (!register.exists()) {
+            return res;
+        }
+
+        List<String> lines = Files.readAllLines(Path.of(Server.registerPath));
+        for (String s : lines) {
+            String[] pathKey = s.split("\0");
+            if (key == null) {
+                res = 1; // giving the symmetric connection user full control
+            } else {
+                if (pathKey[0].equals(this.filepath)) {
+                    res = -1;
+                    if (pathKey[1].equals(key)) {
+                        res *= -1;
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+
+    private void registerFileOwnerPair(String key) throws IOException {
+        Logger.log("Registering a new file...");
+        FileWriter fileWriter = new FileWriter(Server.registerPath, true);
+        String[] entry = new String[2];
+        entry[0] = this.filepath;
+        entry[1] = key + "\n";
+        fileWriter.write(String.join("\0", entry));
+        fileWriter.close();
     }
 }

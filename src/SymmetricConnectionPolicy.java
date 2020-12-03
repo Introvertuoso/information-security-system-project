@@ -9,7 +9,6 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
         Logger.log("Initializing symmetric connection...");
         this.cryptographyMethod = new SymmetricCryptographyMethod();
         this.cryptographyMethod.init();
-        Logger.log("Done" + "\n");
     }
 
     @Override
@@ -21,13 +20,16 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
 
             ((SymmetricCryptographyMethod)cryptographyMethod).setIV(in.nextLine());
 
-            Logger.log("Done" + "\n");
             res = true;
             
         } catch (IOException e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return res;
     }
 
+    @Override
+    public String getClientPublicKey() {
+        return null;
+    }
 }

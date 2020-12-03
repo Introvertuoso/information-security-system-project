@@ -11,12 +11,10 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         Logger.log("Initializing asymmetric connection...");
         this.cryptographyMethod = new AsymmetricCryptographyMethod();
         this.cryptographyMethod.init();
-        Logger.log("Done" + "\n");
     }
 
     @Override
     public boolean handshake(Socket socket) {
-        Logger.log("Performing handshake...");
         boolean res = false;
         try {
             Scanner in = new Scanner(socket.getInputStream());
@@ -27,18 +25,23 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             String privateKey = keys.getValue();     //generate the private key
 
             String clientPublicKey = in.nextLine();
+            Logger.log("Performing handshake...");
             out.println(publicKey);
 
             ((AsymmetricCryptographyMethod) cryptographyMethod).setEncryptionKey(clientPublicKey);
             ((AsymmetricCryptographyMethod) cryptographyMethod).setDecryptionKey(privateKey);
-            
-            Logger.log("Done" + "\n");
+
             res = true;
 
         } catch (IOException e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return res;
+    }
+
+    @Override
+    public String getClientPublicKey() {
+        return ((AsymmetricCryptographyMethod)cryptographyMethod).getEncryptionKey();
     }
 
     public Pair<String, String> generateKeyPair(){
@@ -52,14 +55,12 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             KeyPair kp = kpg.generateKeyPair();
             publicKey = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
             privateKey = Base64.getEncoder().encodeToString(kp.getPrivate().getEncoded());
-            Logger.log("Done" + "\n");
             return new Pair<String, String>(publicKey, privateKey);
 
         } catch (Exception e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return null;
     }
-
 
 }

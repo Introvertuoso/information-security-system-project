@@ -20,14 +20,13 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
     }
 
     public void init() {
-        System.out.print("Initializing symmetric encryption...");
+        Logger.log("Initializing symmetric encryption...");
         try {
             this.cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             this.key = "aesEncryptionKey";
-            Logger.log("Done" + "\n");
 
         } catch (Exception e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
     }
 
@@ -40,11 +39,10 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv); // or Cipher.DECRYPT_MODE
             byte[] encrypted = cipher.doFinal(data.getBytes());
 
-            Logger.log("Done" + "\n");
             return Base64.getEncoder().encodeToString(encrypted);
 
         } catch (Exception e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return null;
     }
@@ -59,11 +57,10 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
 
             byte[] original = cipher.doFinal(Base64.getDecoder().decode(data));
 
-            Logger.log("Done" + "\n");
             return new String(original, StandardCharsets.UTF_8);
 
         } catch (Exception ex) {
-            Logger.log("Failed" + "\n");
+            Logger.log(ex.getMessage());
         }
         return null;
     }

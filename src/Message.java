@@ -19,28 +19,26 @@ public class Message {
     public void unpackData() {
         Logger.log("Unpacking data...");
         if (this.data == null) {
-            Logger.log("Failed" + "\n");
+            Logger.log("Data cannot be null.");
         }
         else {
             String[] temp = data.split("\0");
             if (temp.length != 2) {
-                Logger.log("Failed" + "\n");
+                Logger.log("Data is corrupt.");
             }
             else {
                 String[] taskTemp = temp[0].split(" ", 3);
                 // TODO: [JAWAD] Properly unpack certificate string for construction.
                 String[] certificateTemp = temp[1].split("\0");
                 if (taskTemp.length != 3) {
-                    Logger.log("Failed" + "\n");
+                    Logger.log("Task is corrupt.");
                 } else {
                     this.task = new Task(taskTemp[0], taskTemp[1], taskTemp[2]);
-                    Logger.log("Done" + "\n");
                 }
                 if (certificateTemp.length != 1) {
-                    Logger.log("Failed" + "\n");
+                    Logger.log("Certificate is corrupt.");
                 } else {
                     this.certificate = new Certificate(certificateTemp[0]);
-                    Logger.log("Done" + "\n");
                 }
             }
         }
@@ -50,14 +48,13 @@ public class Message {
     public void packData() {
         System.out.print("Packing data...");
         if (this.task == null || this.certificate == null) {
-            Logger.log("Failed"+ "\n");
+            Logger.log("Task and Certificate cannot be null.");
         }
         else {
             String[] temp = new String[2];
             temp[0] = this.task.toString();
             temp[1] = this.certificate.toString();
             data = String.join("\0", temp);
-            Logger.log("Done" + "\n");
         }
     }
 

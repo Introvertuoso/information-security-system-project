@@ -19,10 +19,9 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         Logger.log("Initializing asymmetric encryption...");
         try {
             cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            Logger.log("Done" + "\n");
 
         } catch (Exception e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
     }
 
@@ -31,11 +30,10 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         Logger.log("Encrypting asymmetrically...");
         try {
             cipher.init(Cipher.ENCRYPT_MODE, loadPublicKey(this.encryptionKey));
-            Logger.log("Done" + "\n");
             return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes()));
 
         } catch (Exception e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return null;
     }
@@ -46,11 +44,10 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         try {
             cipher.init(Cipher.DECRYPT_MODE, loadPrivateKey(this.decryptionKey));
 
-            Logger.log("Done" + "\n");
             return new String(cipher.doFinal(Base64.getDecoder().decode(data)));
 
         } catch (Exception e) {
-            Logger.log("Failed" + "\n");
+            Logger.log(e.getMessage());
         }
         return null;
     }

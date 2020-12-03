@@ -46,7 +46,7 @@ public class Logger {
 
     public static synchronized void log(String message) {
         if (consoleLogs) {
-            System.out.print(message);
+            System.out.println(message);
         }
         if (fileLogs) {
             if (logs == null) {

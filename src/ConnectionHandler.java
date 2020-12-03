@@ -22,7 +22,7 @@ public class ConnectionHandler implements Runnable {
 
     @Override
     public void run() {
-        Logger.log("Connected: " + socket + "\n");
+        Logger.log("Connected: " + socket);
         try {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -31,11 +31,14 @@ public class ConnectionHandler implements Runnable {
                 Logger.log("Failed to perform handshake." + "\n");
             } else {
                 while (in.hasNextLine()) {
+                    Logger.log("Request received.");
+                    String clientPublicKey = connectionPolicy.getClientPublicKey();
                     data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
 //                    System.out.println(data);
                     Message message = new Message(data);
                     message.unpackData();
-                    out.println(connectionPolicy.cryptographyMethod.encrypt(message.getTask().execute()));
+                    out.println(connectionPolicy.cryptographyMethod.encrypt(message.getTask().execute(clientPublicKey)));
+                    Logger.log("Response sent.");
                 }
             }
 
