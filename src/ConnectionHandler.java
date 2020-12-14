@@ -37,7 +37,11 @@ public class ConnectionHandler implements Runnable {
 //                    System.out.println(data);
                     Message message = new Message(data);
                     message.unpackData();
-                    out.println(connectionPolicy.cryptographyMethod.encrypt(message.getTask().execute(clientPublicKey)));
+                    if(connectionPolicy.validate(message))
+                        out.println(connectionPolicy.cryptographyMethod.encrypt(message.getTask().execute(clientPublicKey)));
+                    else
+                        out.println(connectionPolicy.cryptographyMethod.encrypt("SIGNATURE FORGERY"));
+
                     Logger.log("Response sent.");
                 }
             }

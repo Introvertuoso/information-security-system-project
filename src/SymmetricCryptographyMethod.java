@@ -65,6 +65,16 @@ public class SymmetricCryptographyMethod implements ICryptographyMethod {
         return null;
     }
 
+    @Override
+    public String encrypt(String message, String key) {
+        return null;
+    }
+
+    @Override
+    public String decrypt(String data, String key) {
+        return null;
+    }
+
     public String getKey() {
         return key;
     }

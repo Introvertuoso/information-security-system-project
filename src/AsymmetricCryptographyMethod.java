@@ -52,6 +52,24 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         return null;
     }
 
+    @Override
+    public String encrypt(String message, String key) {
+        String temp = this.encryptionKey ;
+        this.encryptionKey = key;
+        String result = this.encrypt(message);
+        this.encryptionKey = temp ;
+        return result;
+    }
+
+    @Override
+    public String decrypt(String data, String key) {
+        String temp = this.decryptionKey ;
+        this.decryptionKey = key;
+        String result = this.decrypt(data);
+        this.decryptionKey = temp ;
+        return result;
+    }
+
     public static Key loadPublicKey(String storedPublic) {
         try {
             byte[] data = Base64.getDecoder().decode(storedPublic.getBytes());

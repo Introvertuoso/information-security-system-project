@@ -30,12 +30,12 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
 
     @Override
     public boolean validate(Message message) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean sign(Message message) {
-        return false;
+        return true;
     }
 
     @Override

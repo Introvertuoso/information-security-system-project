@@ -3,5 +3,9 @@ interface ICryptographyMethod {
 
     String decrypt(String data);
 
+    String encrypt(String message,String key);
+
+    String decrypt(String data,String key);
+
     void init();
 }
