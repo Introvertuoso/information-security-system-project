@@ -8,15 +8,17 @@ public class Message {
     public Message(String data) {
         this.task = null;
         this.certificate = null;
+        this.signature = null;
         this.data = data;
     }
-    public Message(Task task, Certificate certificate) {
+    public Message(Task task, Certificate certificate, String signature) {
         this.task = task;
         this.certificate = certificate;
+        this.signature = signature;
         this.data = null;
     } 
 
-    // data -> task and certificate
+    // data -> task, certificate and signature
     public void unpackData() {
         Logger.log("Unpacking data...");
         if (this.data == null) {
@@ -24,37 +26,46 @@ public class Message {
         }
         else {
             String[] temp = data.split("\0");
-            if (temp.length != 2) {
+            if (temp.length != 3) { // Slots
                 Logger.log("Data is corrupt.");
             }
             else {
                 String[] taskTemp = temp[0].split(" ", 3);
-                // TODO: [JAWAD] Properly unpack certificate string for construction.
                 String[] certificateTemp = temp[1].split("\0");
+                String[] signatureTemp = temp[2].split("\0"); // unnecessary split
+
                 if (taskTemp.length != 3) {
                     Logger.log("Task is corrupt.");
                 } else {
                     this.task = new Task(taskTemp[0], taskTemp[1], taskTemp[2]);
                 }
+
                 if (certificateTemp.length != 1) {
                     Logger.log("Certificate is corrupt.");
                 } else {
                     this.certificate = new Certificate(certificateTemp[0]);
                 }
+
+                if (signatureTemp.length != 1) {
+                    Logger.log("Signature is corrupt.");
+                } else {
+                    this.signature = signatureTemp[0];
+                }
             }
         }
     }
 
-    // task and certificate -> data
+    // task, certificate and signature -> data
     public void packData() {
         System.out.print("Packing data...");
-        if (this.task == null || this.certificate == null) {
-            Logger.log("Task and Certificate cannot be null.");
+        if (this.task == null || this.certificate == null || this.signature == null) {
+            Logger.log("Task, Certificate or Signature cannot be null.");
         }
         else {
-            String[] temp = new String[2];
+            String[] temp = new String[3]; // Slots
             temp[0] = this.task.toString();
             temp[1] = this.certificate.toString();
+            temp[2] = this.signature;
             data = String.join("\0", temp);
         }
     }
