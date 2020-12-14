@@ -11,6 +11,9 @@ public abstract class ConnectionPolicy {
 
     public abstract void init();
     public abstract boolean handshake(Socket socket);
+    public abstract boolean validate(Message message);
+    public abstract boolean sign(Message message);
+    public abstract String getClientPublicKey();
 
     public String generateKey(int keySize){
         Logger.log("Generating key...");
@@ -29,8 +32,6 @@ public abstract class ConnectionPolicy {
         }
         return SK;
     }
-
-    public abstract String getClientPublicKey();
 
     public String generateIV() {
         Logger.log("Generating initial vector...");

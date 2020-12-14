@@ -2,6 +2,7 @@ public class Message {
 
     private Task task;
     private Certificate certificate;
+    private String signature;
     private String data;
 
     public Message(String data) {
@@ -75,5 +76,11 @@ public class Message {
     }
     public void setData(String data) {
         this.data = data;
+    }
+    public String getSignature() {
+        return signature;
+    }
+    public void setSignature(String signature) {
+        this.signature = signature;
     }
 }

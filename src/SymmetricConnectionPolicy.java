@@ -29,6 +29,16 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
     }
 
     @Override
+    public boolean validate(Message message) {
+        return false;
+    }
+
+    @Override
+    public boolean sign(Message message) {
+        return false;
+    }
+
+    @Override
     public String getClientPublicKey() {
         return null;
     }

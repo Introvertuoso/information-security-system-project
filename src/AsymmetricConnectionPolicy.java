@@ -63,4 +63,13 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         return null;
     }
 
+    @Override
+    public boolean validate(Message message) {
+        return false;
+    }
+
+    @Override
+    public boolean sign(Message message) {
+        return false;
+    }
 }
