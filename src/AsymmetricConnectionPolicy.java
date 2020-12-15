@@ -142,7 +142,7 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             out.println(csr.toString());
 
             certificate = new Certificate(in.nextLine());
-            System.out.println(certificate.content);
+            System.out.println(certificate.toString());
 
         } catch (IOException e) {
             e.printStackTrace();
