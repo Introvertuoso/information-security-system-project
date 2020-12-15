@@ -2,13 +2,20 @@ public class Certificate {
     private CSR csr;
     private String signature;
 
-
-
     public Certificate(String dataToUnpack) {
        String [] data = dataToUnpack.split("\0");
-       this.csr = new CSR(data[0],data[1],data[2]);
-        this.signature = data[3];
+       String[] temp = new String[4];
+       if (data.length < 4) {
+           temp[0] = data[0];
+           temp[1] = "";
+           temp[2] = "";
+           temp[3] = "";
+           data = temp;
+       }
+       this.csr = new CSR(data[0], data[1], data[2]);
+       this.signature = data[3];
     }
+
     public Certificate(CSR csr) {
         this.csr = csr;
     }
@@ -17,7 +24,7 @@ public class Certificate {
 
     @Override
     public String toString() {
-        String [] temp = {this.csr.toString(),this.signature};
+        String [] temp = {this.csr.toString(), this.signature};
         return String.join("\0",temp);
     }
 

@@ -1,20 +1,20 @@
 public class Message {
 
     private Task task;
-    private Certificate certificate;
     private String signature;
+    private Certificate certificate;
     private String data;
 
     public Message(String data) {
         this.task = null;
-        this.certificate = null;
         this.signature = null;
+        this.certificate = null;
         this.data = data;
     }
     public Message(Task task, Certificate certificate, String signature) {
         this.task = task;
-        this.certificate = certificate;
         this.signature = signature;
+        this.certificate = certificate;
         this.data = null;
     } 
 
@@ -31,13 +31,19 @@ public class Message {
             }
             else {
                 String[] taskTemp = temp[0].split(" ", 3);
-                String[] certificateTemp = temp[1].split("\0");
-                String[] signatureTemp = temp[2].split("\0"); // unnecessary split
+                String[] signatureTemp = temp[1].split("\0"); // unnecessary split
+                String[] certificateTemp = temp[2].split("\0");
 
                 if (taskTemp.length != 3) {
                     Logger.log("Task is corrupt.");
                 } else {
                     this.task = new Task(taskTemp[0], taskTemp[1], taskTemp[2]);
+                }
+
+                if (signatureTemp.length != 1) {
+                    Logger.log("Signature is corrupt.");
+                } else {
+                    this.signature = signatureTemp[0];
                 }
 
                 if (certificateTemp.length != 1) {
@@ -46,11 +52,6 @@ public class Message {
                     this.certificate = new Certificate(certificateTemp[0]);
                 }
 
-                if (signatureTemp.length != 1) {
-                    Logger.log("Signature is corrupt.");
-                } else {
-                    this.signature = signatureTemp[0];
-                }
             }
         }
     }
@@ -64,8 +65,8 @@ public class Message {
         else {
             String[] temp = new String[3]; // Slots
             temp[0] = this.task.toString();
-            temp[1] = this.certificate.toString();
-            temp[2] = this.signature;
+            temp[1] = this.signature;
+            temp[2] = this.certificate.toString();
             data = String.join("\0", temp);
         }
     }
