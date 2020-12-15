@@ -21,9 +21,19 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
 
     @Override
     public String encrypt(String data) {
+        return this.encrypt(data, loadPublicKey(this.encryptionKey));
+    }
+
+    @Override
+    public String decrypt(String data) {
+        return this.decrypt(data, loadPrivateKey(this.decryptionKey));
+    }
+
+    @Override
+    public String encrypt(String data, Key key) {
         Logger.log("Encrypting asymmetrically...");
         try {
-            cipher.init(Cipher.ENCRYPT_MODE, loadPublicKey(this.encryptionKey));
+            cipher.init(Cipher.ENCRYPT_MODE, key);
             return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes()));
 
         } catch (Exception e) {
@@ -33,10 +43,10 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
     }
 
     @Override
-    public String decrypt(String data) {
+    public String decrypt(String data, Key key) {
         Logger.log("Decrypting asymmetrically...");
         try {
-            cipher.init(Cipher.DECRYPT_MODE, loadPrivateKey(this.decryptionKey));
+            cipher.init(Cipher.DECRYPT_MODE, key);
 
             return new String(cipher.doFinal(Base64.getDecoder().decode(data)));
 
@@ -46,24 +56,6 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
         return null;
     }
 
-    @Override
-    public String encrypt(String message, String key) {
-        String temp = this.encryptionKey ;
-        this.encryptionKey = key;
-        String result = this.encrypt(message);
-        this.encryptionKey = temp ;
-        return result;
-    }
-
-    @Override
-    public String decrypt(String data, String key) {
-        String temp = this.decryptionKey ;
-        this.decryptionKey = key;
-        String result = this.decrypt(data);
-        this.decryptionKey = temp ;
-        return result;
-    }
-
     public static Key loadPublicKey(String storedPublic) {
         try {
             byte[] data = Base64.getDecoder().decode(storedPublic.getBytes());
@@ -71,7 +63,8 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
             KeyFactory fact = KeyFactory.getInstance("RSA");
             return fact.generatePublic(spec);
 
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            Logger.log(e.getMessage());
         }
         return null;
     }
@@ -83,7 +76,8 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
             KeyFactory fact = KeyFactory.getInstance("RSA");
             return fact.generatePrivate(spec);
 
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            Logger.log(e.getMessage());
         }
         return null;
     }

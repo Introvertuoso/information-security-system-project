@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 // nc localhost 11111
 public class ConnectionHandler implements Runnable {
-//    private static final String initVector = "encryptionIntVec";
+    //    private static final String initVector = "encryptionIntVec";
 //    private static final String key = "aesEncryptionKey";
     public static final String currentDirectory = "files";
 
@@ -30,19 +30,27 @@ public class ConnectionHandler implements Runnable {
             if (!connectionPolicy.handshake(socket)) {
                 Logger.log("Failed to perform handshake." + "\n");
             } else {
+                Logger.log("");
                 while (in.hasNextLine()) {
                     Logger.log("Request received.");
                     String clientPublicKey = connectionPolicy.getClientPublicKey();
                     data = connectionPolicy.cryptographyMethod.decrypt(in.nextLine());
-//                    System.out.println(data);
                     Message message = new Message(data);
                     message.unpackData();
-                    if(connectionPolicy.validate(message))
-                        out.println(connectionPolicy.cryptographyMethod.encrypt(message.getTask().execute(clientPublicKey)));
-                    else
-                        out.println(connectionPolicy.cryptographyMethod.encrypt("SIGNATURE FORGERY"));
+                    if (!connectionPolicy.validate(message)) {
+                        Logger.log("Signature invalid.");
+                    } else {
 
-                    Logger.log("Response sent.");
+                        String execution = message.getTask().execute(clientPublicKey);
+                        Message response = new Message(
+                                new Task(execution, "", ""), new Certificate("certificate"), null
+                        );
+                        this.connectionPolicy.sign(response);
+                        response.packData();
+                        out.println(connectionPolicy.cryptographyMethod.encrypt(response.getData()));
+                        Logger.log("Response sent.");
+                        Logger.log("");
+                    }
                 }
             }
 
@@ -53,7 +61,7 @@ public class ConnectionHandler implements Runnable {
             try {
                 socket.close();
                 Logger.log("Closed: " + socket + "\n");
-                
+
             } catch (IOException e) {
                 Logger.log("Failed to close socket.\n");
             }

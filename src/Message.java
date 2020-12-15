@@ -57,9 +57,9 @@ public class Message {
 
     // task, certificate and signature -> data
     public void packData() {
-        System.out.print("Packing data...");
+        Logger.log("Packing data...");
         if (this.task == null || this.certificate == null || this.signature == null) {
-            Logger.log("Task, Certificate or Signature cannot be null.");
+            Logger.log("Task, Certificate and Signature cannot be null.");
         }
         else {
             String[] temp = new String[3]; // Slots

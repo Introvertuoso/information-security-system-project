@@ -43,10 +43,10 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
     @Override
     public String getClientPublicKey() {
-        return ((AsymmetricCryptographyMethod)cryptographyMethod).getEncryptionKey();
+        return ((AsymmetricCryptographyMethod) cryptographyMethod).getEncryptionKey();
     }
 
-    public Pair<String, String> generateKeyPair(){
+    public Pair<String, String> generateKeyPair() {
         Logger.log("Generating key pair...");
         KeyPairGenerator kpg;
         String publicKey = null;
@@ -67,39 +67,43 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
 
     @Override
     public boolean validate(Message message) {
+        Logger.log("Validating signature...");
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] encodedhash = digest.digest(message.getTask().toString().getBytes(StandardCharsets.UTF_8));
 
-            String contentDigest = bytesToHex(encodedhash) ;
+            String contentDigest = bytesToHex(encodedhash);
             String signatureDigest = cryptographyMethod.decrypt(message.getSignature(),
-                    ((AsymmetricCryptographyMethod) cryptographyMethod).getEncryptionKey());
+                    AsymmetricCryptographyMethod.loadPublicKey(
+                            ((AsymmetricCryptographyMethod) cryptographyMethod).getEncryptionKey())
+            );
 
-            if(contentDigest.equals(signatureDigest))
+            if (contentDigest.equals(signatureDigest))
                 return true;
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
 
         return false;
     }
 
 
-
     @Override
     public boolean sign(Message message) {
+        Logger.log("Signing message...");
         try {
-            MessageDigest digest  =  MessageDigest.getInstance("SHA-256");
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] contentDigestBytes = digest.digest(message.getTask().toString().getBytes(StandardCharsets.UTF_8));
             String contentDigest = bytesToHex(contentDigestBytes);
             String signature = cryptographyMethod.encrypt(contentDigest,
-                    ((AsymmetricCryptographyMethod) cryptographyMethod).getDecryptionKey());
+                    AsymmetricCryptographyMethod.loadPrivateKey(
+                            ((AsymmetricCryptographyMethod) cryptographyMethod).getDecryptionKey())
+            );
             message.setSignature(signature);
 
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
-
 
         return true;
     }
@@ -108,7 +112,7 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         StringBuilder hexString = new StringBuilder(2 * hash.length);
         for (int i = 0; i < hash.length; i++) {
             String hex = Integer.toHexString(0xff & hash[i]);
-            if(hex.length() == 1) {
+            if (hex.length() == 1) {
                 hexString.append('0');
             }
             hexString.append(hex);
