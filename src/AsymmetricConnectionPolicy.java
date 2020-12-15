@@ -2,12 +2,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.*;
 import java.util.Base64;
+import java.util.List;
 import java.util.Scanner;
 
-
 public class AsymmetricConnectionPolicy extends ConnectionPolicy {
+    protected Certificate certificate;
     @Override
     public void init() {
         Logger.log("Initializing asymmetric connection...");
@@ -25,6 +28,8 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             Pair<String, String> keys = generateKeyPair();
             String publicKey = keys.getKey();         //generate the public key
             String privateKey = keys.getValue();     //generate the private key
+
+            CAHandshake("Built_in_CA",new CSR("1","09377",publicKey));
 
             String clientPublicKey = in.nextLine();
             Logger.log("Performing handshake...");
@@ -118,5 +123,33 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             hexString.append(hex);
         }
         return hexString.toString();
+    }
+
+    public void CAHandshake(String CA_name,CSR csr){
+        try {
+            System.out.println("performing CA handshake");
+            CA ca  = new CA("CA/"+CA_name+".txt");
+            Socket socket = new Socket(ca.getHost(),ca.getPort());
+
+            Scanner in = new Scanner(socket.getInputStream());
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+
+//            String encryptedCSR = cryptographyMethod.encrypt(csr.toString(),
+//                    AsymmetricCryptographyMethod.loadPublicKey(ca.getPublicKey()));
+
+
+            out.println(csr.toString());
+
+            certificate = new Certificate(in.nextLine());
+            System.out.println(certificate.content);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
     }
 }
