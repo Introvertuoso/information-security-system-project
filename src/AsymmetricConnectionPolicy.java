@@ -104,7 +104,7 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         return true;
     }
 
-    private static String bytesToHex(byte[] hash) {
+    public String bytesToHex(byte[] hash) {
         StringBuilder hexString = new StringBuilder(2 * hash.length);
         for (int i = 0; i < hash.length; i++) {
             String hex = Integer.toHexString(0xff & hash[i]);
