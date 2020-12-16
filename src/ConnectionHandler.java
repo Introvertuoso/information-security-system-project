@@ -22,7 +22,6 @@ public class ConnectionHandler implements Runnable {
 
     @Override
     public void run() {
-        Logger.log("Connected: " + socket);
         try {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -40,30 +39,42 @@ public class ConnectionHandler implements Runnable {
                     if (!connectionPolicy.validate(message)) {
                         Logger.log("Signature invalid.");
                     } else {
+                        Certificate clientCertificate = message.getCertificate();
+                        if (!this.connectionPolicy.validate(clientCertificate)) {
+                            Logger.log("Client certificate invalid.");
+                        } else {
+                            Pair<String, Certificate> execution = message.getTask().execute(clientCertificate);
+                            clientCertificate = execution.getValue();
+                            String executionOutput = execution.getKey();
+                            this.connectionPolicy.sign(clientCertificate);
+                            Message response = new Message(
+                                    new Task(executionOutput, "", ""),
+                                    clientCertificate,
+                                    null
+                            );
+                            this.connectionPolicy.sign(response);
+                            response.packData();
+                            out.println(connectionPolicy.cryptographyMethod.encrypt(response.getData()));
+                            Logger.log("Response sent.");
 
-                        String execution = message.getTask().execute(clientPublicKey);
-                        Message response = new Message(
-                                new Task(execution, "", ""), new Certificate("certificate"), null
-                        );
-                        this.connectionPolicy.sign(response);
-                        response.packData();
-                        out.println(connectionPolicy.cryptographyMethod.encrypt(response.getData()));
-                        Logger.log("Response sent.");
+                            if (executionOutput.equals(Logger.TERMINATE)) {
+                                throw new Exception("");
+                            }
+                        }
                         Logger.log("");
                     }
                 }
             }
 
         } catch (Exception e) {
-            Logger.log("Error: " + socket + "\n");
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         } finally {
             try {
                 socket.close();
-                Logger.log("Closed: " + socket + "\n");
+                Logger.log("Connection terminated.\n");
 
             } catch (IOException e) {
-                Logger.log("Failed to close socket.\n");
+                Logger.log("Connection termination failed.\n");
             }
         }
     }

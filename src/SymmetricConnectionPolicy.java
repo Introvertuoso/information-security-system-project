@@ -34,7 +34,18 @@ public class SymmetricConnectionPolicy extends ConnectionPolicy {
     }
 
     @Override
+    public boolean validate(Certificate certificate) {
+        return false;
+    }
+
+
+    @Override
     public boolean sign(Message message) {
+        return true;
+    }
+
+    @Override
+    public boolean sign(Certificate certificate) {
         return true;
     }
 

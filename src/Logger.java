@@ -10,11 +10,14 @@ import java.util.concurrent.TimeUnit;
 public class Logger {
     public static boolean consoleLogs = true;
     public static boolean fileLogs = false;
-    public static String FAILURE = "Failure";
-    public static String SUCCESS = "Success";
+    public static String FAILURE = "Failure\n";
+    public static String SUCCESS = "Success\n";
+    public static String TERMINATE = "Terminate";
+    public static String LINE = "\n--------------------\n";
     private static ArrayList<String> logs;
     
     public static void start() {
+        Logger.log("");
         if (fileLogs) {
             ScheduledExecutorService executor =
                     Executors.newSingleThreadScheduledExecutor();

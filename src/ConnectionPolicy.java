@@ -12,7 +12,9 @@ public abstract class ConnectionPolicy {
     public abstract void init();
     public abstract boolean handshake(Socket socket);
     public abstract boolean validate(Message message);
+    public abstract boolean validate(Certificate certificate);
     public abstract boolean sign(Message message);
+    public abstract boolean sign(Certificate certificate);
     public abstract String getClientPublicKey();
 
     public String generateKey(int keySize){

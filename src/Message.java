@@ -25,14 +25,14 @@ public class Message {
             Logger.log("Data cannot be null.");
         }
         else {
-            String[] temp = data.split("\0");
+            String[] temp = data.split("\0", 3);
             if (temp.length != 3) { // Slots
                 Logger.log("Data is corrupt.");
             }
             else {
                 String[] taskTemp = temp[0].split(" ", 3);
                 String[] signatureTemp = temp[1].split("\0"); // unnecessary split
-                String[] certificateTemp = temp[2].split("\0");
+                String certificateTemp = temp[2];
 
                 if (taskTemp.length != 3) {
                     Logger.log("Task is corrupt.");
@@ -46,10 +46,10 @@ public class Message {
                     this.signature = signatureTemp[0];
                 }
 
-                if (certificateTemp.length != 1) {
+                if (certificateTemp == null) {
                     Logger.log("Certificate is corrupt.");
                 } else {
-                    this.certificate = new Certificate(certificateTemp[0]);
+                    this.certificate = new Certificate(certificateTemp);
                 }
 
             }

@@ -21,17 +21,18 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
 
     @Override
     public String encrypt(String data) {
+        Logger.log("Encrypting asymmetrically...");
         return this.encrypt(data, loadPublicKey(this.encryptionKey));
     }
 
     @Override
     public String decrypt(String data) {
+        Logger.log("Decrypting asymmetrically...");
         return this.decrypt(data, loadPrivateKey(this.decryptionKey));
     }
 
     @Override
     public String encrypt(String data, Key key) {
-        Logger.log("Encrypting asymmetrically...");
         try {
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return Base64.getEncoder().encodeToString(cipher.doFinal(data.getBytes()));
@@ -44,7 +45,6 @@ public class AsymmetricCryptographyMethod implements ICryptographyMethod {
 
     @Override
     public String decrypt(String data, Key key) {
-        Logger.log("Decrypting asymmetrically...");
         try {
             cipher.init(Cipher.DECRYPT_MODE, key);
 

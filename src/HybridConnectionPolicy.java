@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -68,6 +70,17 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
     }
 
     @Override
+    public boolean validate(Certificate certificate) {
+        Logger.log("Validating client certificate...");
+        String assumedClientPublicKey = ((AsymmetricCryptographyMethod)this.methodUsedInHandshake).getEncryptionKey();
+
+        return
+                verifySignatureHash(
+                        certificate.getCsr().toString(), certificate.getSignature(), publicKey, methodUsedInHandshake
+                ) && (certificate.getCsr().getPublicKey().equals(assumedClientPublicKey));
+    }
+
+    @Override
     public boolean sign(Message message) {
         Logger.log("Signing message...");
         try {
@@ -87,6 +100,26 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
         return true;
     }
 
+    public boolean sign(Certificate certificate) {
+        try {
+            CSR csr = certificate.getCsr();
+            MessageDigest digest  =  MessageDigest.getInstance("SHA-256");
+            byte[] contentDigestBytes = digest.digest(csr.toString().getBytes(StandardCharsets.UTF_8));
+            String contentDigest = bytesToHex(contentDigestBytes);
+            String signature = cryptographyMethod.encrypt(
+                    contentDigest, AsymmetricCryptographyMethod.loadPrivateKey(
+                            (methodUsedInHandshake == null) ?
+                                    ((AsymmetricCryptographyMethod) cryptographyMethod).getDecryptionKey() :
+                                    ((AsymmetricCryptographyMethod) methodUsedInHandshake).getDecryptionKey()
+                    )
+            );
+            certificate.setSignature(signature);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 
     @Override
     public String getClientPublicKey() {

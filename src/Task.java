@@ -1,8 +1,11 @@
+import javax.xml.validation.SchemaFactoryConfigurationError;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 public class Task {
@@ -45,10 +48,20 @@ public class Task {
 //      )
 //    )
 
-    public String execute(String key) { // Execute should become in ConnectionHandler to allow navigation
+    public Pair<String, Certificate> execute(Certificate certificate) { // Execute should become in ConnectionHandler to allow navigation
         Logger.log("Executing task...");
         StringBuilder temp = new StringBuilder();
+        String title = generateTitle();
+        temp.append(title.length() > 20 ? title.substring(0, 19) : title.toUpperCase())
+                .append(title.equals("") ? "" : Logger.LINE);
         switch (action) {
+            case "quit":
+
+            case"exit" :
+                Logger.log("Connection termination requested.");
+                temp.append(Logger.TERMINATE);
+                break;
+
             case "list":
                 if (!this.filepath.equals("") || !this.newFileContent.equals("")) {
                     Logger.log("Command is malformed");
@@ -71,6 +84,7 @@ public class Task {
                     }
                 }
                 break;
+
             case "read":
                 if (!this.newFileContent.equals("")) {
                     temp.append(Logger.FAILURE);
@@ -93,34 +107,25 @@ public class Task {
                     }
                 }
                 break;
+
             case "write":
                 if (this.newFileContent.equals("")) {
                     temp.append(Logger.SUCCESS);
 
                 } else {
                     File file = new File(this.filepath);
-                    int compatibility;
 
                     try {
-                        compatibility = isCompatible(key);
-
-                        if (compatibility < 0) {
+                        if (!isAuthorized(certificate)) {
                             Logger.log("Access denied.");
                             temp.append(Logger.FAILURE);
-                        } else {
-                            try {
-                                if (compatibility == 0) {
-                                    registerFileOwnerPair(key);
-                                }
-                                FileWriter writer = new FileWriter(this.filepath);
-                                writer.write(this.newFileContent);
-                                writer.close();
-                                temp.append(Logger.SUCCESS);
 
-                            } catch (IOException e) {
-                                Logger.log(e.getMessage());
-                                temp.append(Logger.FAILURE);
-                            }
+                        } else {
+                            authorize(certificate);
+                            FileWriter writer = new FileWriter(this.filepath);
+                            writer.write(this.newFileContent);
+                            writer.close();
+                            temp.append(Logger.SUCCESS);
                         }
 
                     } catch (Exception e) {
@@ -129,47 +134,51 @@ public class Task {
                     }
                 }
                 break;
+
             default:
                 temp.append(Logger.FAILURE);
                 Logger.log("Command is malformed.");
         }
-        return temp.toString();
+        return new Pair<>(temp.toString(), certificate);
     }
 
-    private int isCompatible(String key) throws IOException {
-        Logger.log("Checking for compatibility...");
-        int res = 0; // -1 = not the owner, 0 = doesn't exist, 1 = the owner
-        File register = new File(Server.registerPath);
+    private boolean isAuthorized(Certificate certificate) throws IOException {
+        Logger.log("Checking authorization...");
+        boolean res = false;
 
-        if (!register.exists()) {
-            return res;
-        }
+        String[] lines = certificate.getCsr().getExtras().split("\n");
 
-        List<String> lines = Files.readAllLines(Path.of(Server.registerPath));
         for (String s : lines) {
-            String[] pathKey = s.split("\0");
-            if (key == null) {
-                res = 1; // giving the symmetric connection user full control
-            } else {
-                if (pathKey[0].equals(this.filepath)) {
-                    res = -1;
-                    if (pathKey[1].equals(key)) {
-                        res *= -1;
-                    }
-                }
+            if (s.equals(this.filepath)) {
+                res = true;
+                break;
             }
         }
 
         return res;
     }
 
-    private void registerFileOwnerPair(String key) throws IOException {
-        Logger.log("Registering a new file...");
-        FileWriter fileWriter = new FileWriter(Server.registerPath, true);
-        String[] entry = new String[2];
-        entry[0] = this.filepath;
-        entry[1] = key + "\n";
-        fileWriter.write(String.join("\0", entry));
-        fileWriter.close();
+    private void authorize(Certificate certificate) {
+        Logger.log("Authorizing user...");
+        String temp = certificate.getCsr().getExtras();
+        certificate.getCsr().setExtras(temp + "\n" + this.filepath);
+    }
+
+    private String generateTitle() {
+        String res = "";
+
+        if (action.equals("list")) {
+            res = action.toUpperCase();
+        }
+
+        else if (action.equals("read") || action.equals("write")) {
+            return String.join(
+                    " ",
+                    action,
+                    filepath.substring(filepath.lastIndexOf("\\") + 1)
+            ).toUpperCase();
+        }
+
+        return res;
     }
 }
