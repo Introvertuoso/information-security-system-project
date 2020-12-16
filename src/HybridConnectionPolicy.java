@@ -1,3 +1,5 @@
+import org.w3c.dom.ls.LSOutput;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -100,23 +102,26 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
         return true;
     }
 
+    @Override
     public boolean sign(Certificate certificate) {
+        Logger.log("Signing certificate...");
         try {
             CSR csr = certificate.getCsr();
             MessageDigest digest  =  MessageDigest.getInstance("SHA-256");
             byte[] contentDigestBytes = digest.digest(csr.toString().getBytes(StandardCharsets.UTF_8));
             String contentDigest = bytesToHex(contentDigestBytes);
-            String signature = cryptographyMethod.encrypt(
+            AsymmetricCryptographyMethod AsymmatricMethod = (methodUsedInHandshake == null) ?
+                    ((AsymmetricCryptographyMethod) cryptographyMethod) :
+                    ((AsymmetricCryptographyMethod) methodUsedInHandshake);
+            String signature = AsymmatricMethod.encrypt(
                     contentDigest, AsymmetricCryptographyMethod.loadPrivateKey(
-                            (methodUsedInHandshake == null) ?
-                                    ((AsymmetricCryptographyMethod) cryptographyMethod).getDecryptionKey() :
-                                    ((AsymmetricCryptographyMethod) methodUsedInHandshake).getDecryptionKey()
+                            AsymmatricMethod.getDecryptionKey()
                     )
             );
             certificate.setSignature(signature);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
         return true;
     }

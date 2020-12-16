@@ -155,13 +155,19 @@ public class Task {
             }
         }
 
+        if(!new File(this.filepath).exists())
+            res = true;
+
         return res;
     }
 
     private void authorize(Certificate certificate) {
         Logger.log("Authorizing user...");
+        String delimiter = "\n";
         String temp = certificate.getCsr().getExtras();
-        certificate.getCsr().setExtras(temp + "\n" + this.filepath);
+        if(temp.equals(""))
+            delimiter = "";
+        certificate.getCsr().setExtras(temp + delimiter + this.filepath);
     }
 
     private String generateTitle() {
