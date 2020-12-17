@@ -1,15 +1,9 @@
-import org.w3c.dom.ls.LSOutput;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Scanner;
 
 public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
     ICryptographyMethod methodUsedInHandshake;
@@ -115,7 +109,7 @@ public class HybridConnectionPolicy extends AsymmetricConnectionPolicy {
                     ((AsymmetricCryptographyMethod) methodUsedInHandshake);
             String signature = AsymmatricMethod.encrypt(
                     contentDigest, AsymmetricCryptographyMethod.loadPrivateKey(
-                            AsymmatricMethod.getDecryptionKey()
+                            privateKey
                     )
             );
             certificate.setSignature(signature);

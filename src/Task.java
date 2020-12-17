@@ -146,7 +146,7 @@ public class Task {
         Logger.log("Checking authorization...");
         boolean res = false;
 
-        String[] lines = certificate.getCsr().getExtras().split("\n");
+        String[] lines = certificate.getCsr().getExtras().split("\\|");
 
         for (String s : lines) {
             if (s.equals(this.filepath)) {
@@ -162,11 +162,15 @@ public class Task {
     }
 
     private void authorize(Certificate certificate) {
+        if(new File(this.filepath).exists())
+            return;
+
         Logger.log("Authorizing user...");
-        String delimiter = "\n";
+        String delimiter = "|";
         String temp = certificate.getCsr().getExtras();
         if(temp.equals(""))
             delimiter = "";
+
         certificate.getCsr().setExtras(temp + delimiter + this.filepath);
     }
 

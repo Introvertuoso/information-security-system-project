@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 public class AsymmetricConnectionPolicy extends ConnectionPolicy {
     protected String publicKey;
+    protected String privateKey;
     protected Certificate certificate;
 
     @Override
@@ -27,9 +28,9 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             Scanner in = new Scanner(socket.getInputStream());
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            Pair<String, String> keys = generateKeyPair();
-            publicKey = keys.getKey();                //generate the public key
-            String privateKey = keys.getValue();     //generate the private key
+//            Pair<String, String> keys = generateKeyPair();
+//            publicKey = keys.getKey();                  //generate the public key
+//            privateKey = keys.getValue();               //generate the private key
 
             handshake("Built_in_CA", new CSR("1", "09377", publicKey));
 
@@ -45,7 +46,7 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
             if (clientCertificate.getSignature().equals("unsigned") &&
                     clientCertificate.getCsr().getExtras().equals("")
             ) {
-                this.sign(clientCertificate);
+                sign(clientCertificate);
             }
             out.println(clientCertificate.toString());
 
@@ -60,25 +61,6 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
     @Override
     public String getClientPublicKey() {
         return ((AsymmetricCryptographyMethod) cryptographyMethod).getEncryptionKey();
-    }
-
-    public Pair<String, String> generateKeyPair() {
-        Logger.log("Generating key pair...");
-        KeyPairGenerator kpg;
-        String publicKey = null;
-        String privateKey = null;
-        try {
-            kpg = KeyPairGenerator.getInstance("RSA");
-            kpg.initialize(1024);
-            KeyPair kp = kpg.generateKeyPair();
-            publicKey = Base64.getEncoder().encodeToString(kp.getPublic().getEncoded());
-            privateKey = Base64.getEncoder().encodeToString(kp.getPrivate().getEncoded());
-            return new Pair<String, String>(publicKey, privateKey);
-
-        } catch (Exception e) {
-            Logger.log(e.getMessage());
-        }
-        return null;
     }
 
     @Override
@@ -203,5 +185,29 @@ public class AsymmetricConnectionPolicy extends ConnectionPolicy {
         }
 
         return false;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
+
+    public Certificate getCertificate() {
+        return certificate;
+    }
+
+    public void setCertificate(Certificate certificate) {
+        this.certificate = certificate;
     }
 }
